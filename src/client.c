@@ -7,12 +7,19 @@
 #define PORT 8080
 #define BUF_SIZE 1024
 
-int main() {
+int main()
+{
 	int sock = 0;
 	struct sockaddr_in server_addr;
-	char message[BUF_SIZE] = "Hi, server!";
+	char message[BUF_SIZE];
 	char buffer[BUF_SIZE] = {0};
 	int read_size;
+
+	// do {
+	// 	printf("Enter the message to send: ");
+	// 	fgets(message, BUF_SIZE, stdin);
+	// } while(message != NULL);
+
 
 	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 		perror("socket failed");
@@ -35,14 +42,26 @@ int main() {
 		exit(EXIT_FAILURE);
 	}
 
-	write(sock, message, strlen(message));
+	while (1) {
+		printf("Enter the message to send: ");
+		fgets(message, BUF_SIZE, stdin);
 
-	read_size = read(sock, buffer, BUF_SIZE);
-	if (read_size > 0) {
-		printf("Message received from server: %s\n", buffer);
-	} else {
-		printf("No response from server\n");
+		if (strncmp(buffer, "/q", 2) == 0) {
+			printf("Quit\n");
+			break;
+		}
+		send(sock, message, strlen(message), 0);
+		read_size = recv(sock, buffer, BUF_SIZE, 0);
+
+		if (read_size > 0) {
+			printf("Message received from server: %s\n", buffer);
+		}
+		else {
+			printf("No response from server\n");
+			break;
+		}
 	}
+
 
 	close(sock);
 	

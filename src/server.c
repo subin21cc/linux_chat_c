@@ -7,12 +7,14 @@
 #define PORT 8080
 #define BUF_SIZE 1024
 
-int main() {
+int main()
+{
 	int server_fd, client_fd;
 	struct sockaddr_in server_addr, client_addr;
 	socklen_t client_addr_len = sizeof(client_addr);
 	char buffer[BUF_SIZE] = {0};
 	int read_size;
+	char message[BUF_SIZE];
 
 	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 		perror("socket failed");
@@ -36,23 +38,26 @@ int main() {
 		exit(EXIT_FAILURE);
 	}
 
-	printf("Server is listening on port %d...\n", PORT);
-
 	if ((client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &client_addr_len)) == -1) {
 		perror("accept failed");
 		close(server_fd);
 		exit(EXIT_FAILURE);
 	}
 
-	printf("Client accepted\n");
-
-	read_size = read(client_fd, buffer, BUF_SIZE);
-	if (read_size > 0) {
-		printf("Massage received from client: %s\n", buffer);
-		write(client_fd, buffer, read_size);
-	} else {
-		printf("Failed to read data or client terminated\n");
+	while (1) {
+		read_size = recv(client_fd, buffer, BUF_SIZE, 0);
+		if (read_size > 0) {
+			printf("Massage received from client: %s\n", buffer);
+			printf("Enter the message to send: ");
+			fgets(message, BUF_SIZE, stdin);
+			send(client_fd, message, strlen(message), 0);
+		}
+		else {
+			printf("Failed to read data or client terminated\n");
+			break;
+		}
 	}
+
 	
 	close(client_fd);
 	close(server_fd);
