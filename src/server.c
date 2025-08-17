@@ -45,7 +45,9 @@ int main()
 	}
 
 	while (1) {
-		read_size = recv(client_fd, buffer, BUF_SIZE, 0);
+		read_size = recv(client_fd, buffer, BUF_SIZE - 1, 0);
+		buffer[read_size] = '\0';
+
 		if (read_size > 0) {
 			printf("Massage received from client: %s\n", buffer);
 			printf("Enter the message to send: ");

@@ -51,7 +51,9 @@ int main()
 			break;
 		}
 		send(sock, message, strlen(message), 0);
-		read_size = recv(sock, buffer, BUF_SIZE, 0);
+
+		read_size = recv(sock, buffer, BUF_SIZE - 1, 0);
+		buffer[read_size] = '\0';
 
 		if (read_size > 0) {
 			printf("Message received from server: %s\n", buffer);
