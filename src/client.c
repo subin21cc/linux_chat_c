@@ -55,6 +55,11 @@ int main()
 		read_size = recv(sock, buffer, BUF_SIZE - 1, 0);
 		buffer[read_size] = '\0';
 
+		if (strncmp(buffer, "/q", 2) == 0) {
+			printf("Quit\n");
+			break;
+		}
+
 		if (read_size > 0) {
 			printf("Message received from server: %s\n", buffer);
 		}
